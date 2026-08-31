@@ -1,7 +1,7 @@
 const { validationResult } = require("express-validator");
-let { courses } = require("../data/courses");
 const Course = require("../models/course.model");
 const httpStatusText = require("../utils/httpStatusText");
+const asyncWrapper = require("../middlewares/asyncWrapper");
 
 //add course
 const addCourse = async (req, res) => {
@@ -46,25 +46,24 @@ const getAllCourses = async (req, res) => {
 };
 
 //get specific course
-const getCourseById = async (req, res) => {
-  try {
+const getCourseById = asyncWrapper(
+    async (req, res, next) => {
+  
     const { courseId } = req.params; //courseId will be string
     const course = await Course.findById({ _id: courseId });
     if (!course) {
-      return res
-        .status(404)
-        .json({ status: httpStatusText.FAIL, data: { course: null } });
+        const error = new Error();
+        error.message = 'not found course';
+        error.statusCode = 404;
+    //   return res
+    //     .status(404)
+    //     .json({ status: httpStatusText.FAIL, data: { course: null } });
     }
     res
       .status(200)
       .json({ status: httpStatusText.SUCCESS, data: { course: course } });
-  } catch (e) {
-    return res
-      .status(400)
-      .json({ status: httpStatusText.ERROR, message: e.message });
-  }
-};
 
+} )
 //update specific course
 const updateCourseById = async (req, res) => {
   try {
