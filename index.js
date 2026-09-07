@@ -1,16 +1,16 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-
 const connectDB = require('./connections/db-connection');
 const courseRouter = require('./routes/courses.routes');
+const userRouter = require('./routes/users.routes');
 const httpStatusText = require('./utils/httpStatusText');
 
 
 
 const app = express();
 
-// Connect to MongoDB
+//Connect to MongoDB
 connectDB();
 
 //enable cors for all origins
@@ -21,6 +21,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/api/courses', courseRouter);
+app.use('/api/users', userRouter);
 
 //for not found routes
 app.use((req, res) => {
@@ -32,7 +33,7 @@ app.use((req, res) => {
 
 //global middleware for errors
 app.use( (error, req, res, next) => {
-    res.status(error.statusCode || 500).json({ status: httpStatusText.ERROR, message: error.message });
+    res.status(error.statusCode || 500).json({ status: error.statusText || httpStatusText.ERROR, message: error.message, code: error.statusCode || 500, data: null });
 } )
 
 app.listen(process.env.PORT, (req,res) => {
