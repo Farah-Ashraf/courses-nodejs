@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const path = require('node:path');
 const connectDB = require('./connections/db-connection');
 const courseRouter = require('./routes/courses.routes');
 const userRouter = require('./routes/users.routes');
@@ -19,6 +20,9 @@ app.use(cors());
 
 //middleware so the apis will read the body in a json format (use express.json or body-parser)
 app.use(express.json());
+
+//static route: Allow clients to access files stored in the uploads folder
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use('/api/courses', courseRouter);
 app.use('/api/users', userRouter);

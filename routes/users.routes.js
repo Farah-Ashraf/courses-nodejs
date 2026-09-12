@@ -1,5 +1,7 @@
 const express = require('express');
 const userController = require('../controllers/users.controller');
+const verifyToken = require('../middlewares/verifyToken');
+const upload = require('../middlewares/upload');
 
 const router = express.Router();
 
@@ -8,11 +10,11 @@ const router = express.Router();
 //login
 
 router.route('/')
-.get(userController.getAllUsers)
+.get(verifyToken, userController.getAllUsers)
 
  
 router.route('/signup')
-.post(userController.signup)
+.post(upload.single('avatar'), userController.signup)
 
 
 router.route('/signin')
